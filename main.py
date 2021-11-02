@@ -21,11 +21,10 @@ def misplaced(problem, queueFunc):
     # loop here1
     if (nodes.empty):
         print("no solution")
-        return
+        return -1
     else:
         node = nodes.get()
-        # need to compare lists properly
-        if (problem.goalState == node):
+        if (compare(problem.goalState, node)):
             return node
         else:
             # find the index of the blank and pass it to the operations
@@ -37,6 +36,12 @@ def manhattan(problem, queueFunc):
     print("manhattan distance");
     nodes = queue.PriorityQueue()
     nodes.put(problem.initialState)
+
+def compare(list1, list2):
+    for i in range(len(list1)):
+        if (list1[i] != list2[i]):
+            return False
+    return True
 
 
 def main():
@@ -73,18 +78,19 @@ def main():
         print("\nYour puzzle: ")
         problem.print(problem.initialState)
 
-        print("Select a search algorithm to solve your puzzle:")
-        algorithm = input("Enter \'1\' for Uniform Cost Search\nEnter \'2\'for Misplaced Tile A*\nEnter \'3\' for Manhattan Distance A*\n")
+    # choose algorithm to solve default or custom puzzle
+    print("Select a search algorithm to solve your puzzle:")
+    algorithm = input("Enter \'1\' for Uniform Cost Search\nEnter \'2\'for Misplaced Tile A*\nEnter \'3\' for Manhattan Distance A*\n")
 
-        if (algorithm == '1'):
-            print("uniform cost algorithm")
-            # call corresponding algorithm
-        elif (algorithm == '2'):
-            print("misplaced tile algorithm")
-            # call corresponding algorithm
-        elif (algorithm == '3'):
-            print("manhattan distance algorithm")
-            # call corresponding algorithm
+    if (algorithm == '1'):
+        print("uniform cost algorithm")
+        # call corresponding algorithm
+    elif (algorithm == '2'):
+        print("misplaced tile algorithm")
+        # call corresponding algorithm
+    elif (algorithm == '3'):
+        print("manhattan distance algorithm")
+        # call corresponding algorithm
 
 if __name__ == "__main__":
     main()
