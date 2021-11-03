@@ -16,25 +16,25 @@ class Problem:
         if (blankIndex != 0 and blankIndex != 3 and blankIndex != 6):
             return swap(node, blankIndex, blankIndex - 1)
         else:
-            return node.copy()
+            return []
 
     def shiftRight(node, blankIndex):
         if (blankIndex != 2 and blankIndex != 5 and blankIndex != 8):
             return swap(node, blankIndex, blankIndex + 1)
         else:
-            return node.copy()
+            return []
 
     def shiftUp(node, blankIndex):
         if (blankIndex != 0 and blankIndex != 1 and blankIndex != 2):
             return swap(node, blankIndex, blankIndex - 3)
         else:
-            return node.copy()
+            return []
 
     def shiftDown(node, blankIndex):
         if (blankIndex != 6 and blankIndex != 7 and blankIndex != 8):
             return swap(node, blankIndex, blankIndex + 3)
         else:
-            return node.copy()
+            return []
 
 # makes a copy 
 def swap(node, pos1, pos2):
