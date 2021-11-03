@@ -7,42 +7,41 @@ def misplaced(problem: Problem, queueFunc):
     nodes = queue.PriorityQueue()
     nodes.put(problem.initialState)
 
-    operators = [problem.shiftLeft, problem.shiftRight, problem.shiftUp, problem.shiftDown]
+    operators = [problem.shiftDown, problem.shiftLeft, problem.shiftRight, problem.shiftUp]
 
-    # loop here1
-    if (nodes.empty):
-        print("no solution")
-        return -1
-    else:
-        node = nodes.get()
-        if (tilesMisplaced(problem.goalState, node) == 0): 
-            return node
+    # loop here
+    while(1):
+        if (nodes.empty):
+            print("no solution")
+            return -1
         else:
-            # find the index of the blank and pass it to the operations
-            blankIndex = node.index(0) 
-
-            nodes = queueFunc(nodes, expand(node, blankIndex, operators))
+            node = nodes.get()
+            if (tilesMisplaced(problem.goalState, node) == 0): 
+                return node
+            else:
+                nodes = queueFunc(nodes, expand(node))
 
 # iterate through problem's operators and run each of them with the same aruguments
 # if they return a non-empty list, append to the children list
 # return children
-def expand(node, blankIndex, operators):
+def expand(node):
     children = []
+    operators = [Problem.shiftDown, Problem.shiftLeft, Problem.shiftRight, Problem.shiftUp]
+    blankIndex = node.index(0) 
     for shift in operators:
         child = shift(node, blankIndex)
         if (child):
             children.append(child)
     return children
 
-# enqueue heuristic cost and node as a list
-# iterate through children and call tilesMisplaced() or manhattan to calculate heueristic cost 
+# iterate through children and call tilesMisplaced() or manhattan() to calculate heueristic cost 
+# enqueue heuristic cost and node together as a list
 def queueFunc(queue, children):
     goal = Problem.goalState
     for child in children:
         cost = tilesMisplaced(goal, child)
         queue.put([cost, child])
     return queue
-
 
 # compares two lists and returns the amount of differences between the list
 # excludes the blank space
@@ -74,14 +73,13 @@ def main():
     if (userChoice == '1'):
         # print("Initial: ")
         # problem.print(problem.initialState)
-        operators = [problem.shiftDown, problem.shiftLeft, problem.shiftRight, problem.shiftUp]
-        children = expand(problem.initialState, 4, operators)
-        
+        children = expand([1, 2, 3, 4, 5, 6, 7, 8, 0])
         nodes = queueFunc(nodes, children)
-        print(nodes.get())
-        print(nodes.get())
-        print(nodes.get())
-        print(nodes.get())
+        print(nodes.qsize())
+        for i in range(nodes.qsize()):
+            node = nodes.get()
+            print(f"cost: {node[0]}")
+            problem.print(node[1])
 
     elif (userChoice == '2'):
         print("\nEnter your puzzle, using a zero to represent the blank.\nPlease only enter valid 8-puzzles.\n") 
