@@ -1,5 +1,6 @@
 import queue
 from problem import Problem
+import time
 
 # Parameter Legend
 # nodes --> priority queue
@@ -10,18 +11,16 @@ from problem import Problem
 
 def aStar(problem: Problem, addNodes):
     nodes = queue.PriorityQueue()
-
     # enqueues a node corresponding to initial state
     nodes.put(makeNode(problem.initialState, 0))
-
     while(1):
         if (nodes.empty()):
             print("no solution")
             return -1
         else:
             node = nodes.get()
-            if (tilesMisplaced(problem.goalState, node[1] == 0)): 
-                return node[1]
+            if (tilesMisplaced(problem.goalState, node[1]) == 0): 
+                return node
             else:
                 nodes = addNodes(nodes, expand(node[1]), node[2] + 1)
 
@@ -102,18 +101,24 @@ def main():
         puzzle.print(puzzle.initialState)
 
     # choose algorithm to solve default or custom puzzle
-    print("Select a search algorithm to solve your puzzle:")
+    print("\nSelect a search algorithm to solve your puzzle:")
     algorithm = input("Enter \'1\' for Uniform Cost Search\nEnter \'2\'for Misplaced Tile A*\nEnter \'3\' for Manhattan Distance A*\n")
 
     if (algorithm == '1'):
-        print("uniform cost algorithm")
+        print("\nRunning Uniform Cost Algorithm...")
         # call corresponding algorithm
     elif (algorithm == '2'):
-        print("misplaced tile algorithm")
-        puzzle.print(aStar(puzzle, addNodes))
+        print("\nRunning Misplaced Tile Algorithm...")
+        start = time.time()
+        node = aStar(puzzle, addNodes)
+        end = time.time()
+        puzzle.print(node[1])
+        print(f"Total Cost: {node[0]}")
+        print(f"Depth: {node[2]}")
+        print(end - start)
 
     elif (algorithm == '3'):
-        print("manhattan distance algorithm")
+        print("\nRunning Manhattan Distance Algorithm...")
         # call corresponding algorithm
 
 if __name__ == "__main__":
