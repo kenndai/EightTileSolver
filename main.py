@@ -1,64 +1,69 @@
 import queue
 from problem import Problem
 
-def misplaced(problem: Problem, queueFunc):
-    print("misplaced tile")
+# Parameter Legend
+# nodes --> priority queue
+# node --> total cost, state, and depth
+# state --> list representing the puzzle board 
+# children --> list of states resulting from a shift
+# child --> a singular state from children
 
+def aStar(problem: Problem, addNodes):
     nodes = queue.PriorityQueue()
-    nodes.put(problem.initialState)
 
-    operators = [problem.shiftDown, problem.shiftLeft, problem.shiftRight, problem.shiftUp]
+    # enqueues a node corresponding to initial state
+    nodes.put(makeNode(problem.initialState, 0))
 
-    # loop here
     while(1):
-        if (nodes.empty):
+        if (nodes.empty()):
             print("no solution")
             return -1
         else:
             node = nodes.get()
-            if (tilesMisplaced(problem.goalState, node) == 0): 
-                return node
+            if (tilesMisplaced(problem.goalState, node[1] == 0)): 
+                return node[1]
             else:
-                nodes = queueFunc(nodes, expand(node))
+                nodes = addNodes(nodes, expand(node[1]), node[2] + 1)
 
-# iterate through problem's operators and run each of them with the same aruguments
-# if they return a non-empty list, append to the children list
-# return children
-def expand(node):
+# creates nodes corresponding to the children states and enqueue
+def addNodes(queue, children, depth: int):
+    for child in children:
+        queue.put(makeNode(child, depth))
+    return queue
+
+# creates a node by assigning a function cost, uniform cost + heuristic cost, to a state
+def makeNode(state, depth: int):
+    return [tilesMisplaced(Problem.goalState, state) + depth, state, depth]
+    
+# returns a generated list of child states
+# iterates through Problem's operators and runs each
+# only non-empty states are appended
+def expand(state):
     children = []
     operators = [Problem.shiftDown, Problem.shiftLeft, Problem.shiftRight, Problem.shiftUp]
-    blankIndex = node.index(0) 
+    blankIndex = state.index(0) 
     for shift in operators:
-        child = shift(node, blankIndex)
+        child = shift(state, blankIndex)
         if (child):
             children.append(child)
     return children
 
-# iterate through children and call tilesMisplaced() or manhattan() to calculate heueristic cost 
-# enqueue heuristic cost and node together as a list
-def queueFunc(queue, children):
-    goal = Problem.goalState
-    for child in children:
-        cost = tilesMisplaced(goal, child)
-        queue.put([cost, child])
-    return queue
-
 # compares two lists and returns the amount of differences between the list
 # excludes the blank space
-# used for calculating amount of misplaced tiles as well as to compare node with goal state
-def tilesMisplaced(list1, list2):
+# used for calculating amount of misplaced tiles as well as to compare state with goal state
+def tilesMisplaced(goal, state):
     differences = 0
-    for i in range(len(list1)):
-        if (list1[i] != list2[i] and list2[i] != 0):
+    for i in range(len(state)):
+        if (goal[i] != state[i] and state[i] != 0):
             differences += 1
     return differences
 
-def manhattan(problem, queueFunc):
+def manhattan(problem, addNodes):
     print("manhattan distance");
     nodes = queue.PriorityQueue()
     nodes.put(problem.initialState)
 
-def manhattanCost(node):
+def manhattanCost(state):
     return 1
 
 def main():
@@ -67,19 +72,12 @@ def main():
 
     # create a problem space
     # the problem's initial state is set to either the predefined one or user input
-    problem = Problem
+    puzzle = Problem
     nodes = queue.PriorityQueue()
 
     if (userChoice == '1'):
-        # print("Initial: ")
-        # problem.print(problem.initialState)
-        children = expand([1, 2, 3, 4, 5, 6, 7, 8, 0])
-        nodes = queueFunc(nodes, children)
-        print(nodes.qsize())
-        for i in range(nodes.qsize()):
-            node = nodes.get()
-            print(f"cost: {node[0]}")
-            problem.print(node[1])
+        print("Initial: ")
+        puzzle.print(puzzle.initialState)
 
     elif (userChoice == '2'):
         print("\nEnter your puzzle, using a zero to represent the blank.\nPlease only enter valid 8-puzzles.\n") 
@@ -99,9 +97,9 @@ def main():
             rowInput[i] = int(rowInput[i])
         
         # set intial state to input
-        problem.initialState = rowInput
+        puzzle.initialState = rowInput
         print("\nYour puzzle: ")
-        problem.print(problem.initialState)
+        puzzle.print(puzzle.initialState)
 
     # choose algorithm to solve default or custom puzzle
     print("Select a search algorithm to solve your puzzle:")
@@ -112,7 +110,8 @@ def main():
         # call corresponding algorithm
     elif (algorithm == '2'):
         print("misplaced tile algorithm")
-        # call corresponding algorithm
+        puzzle.print(aStar(puzzle, addNodes))
+
     elif (algorithm == '3'):
         print("manhattan distance algorithm")
         # call corresponding algorithm
