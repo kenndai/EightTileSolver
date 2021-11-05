@@ -9,7 +9,7 @@ import time
 # children --> list of states resulting from a shift
 # child --> a singular state from children
 
-def aStar(problem: Problem, addNodes):
+def misplacedTile(problem: Problem, addNodes):
     nodes = queue.PriorityQueue()
     # enqueues a node corresponding to initial state
     nodes.put(makeNode(problem.initialState, 0))
@@ -57,13 +57,12 @@ def tilesMisplaced(goal, state):
             differences += 1
     return differences
 
-def manhattan(problem, addNodes):
-    print("manhattan distance");
-    nodes = queue.PriorityQueue()
-    nodes.put(problem.initialState)
-
-def manhattanCost(state):
-    return 1
+def manhattanCost(goal, state):
+    cost = 0
+    for i in range(len(state)):
+        if (goal[i] != state[i] and state[i] != 0):
+            cost += abs(i - (goal[i - 1]))
+    return cost
 
 def main():
     print("Welcome to the Eight Tile Puzzle Solver!")
@@ -110,7 +109,7 @@ def main():
     elif (algorithm == '2'):
         print("\nRunning Misplaced Tile Algorithm...")
         start = time.time()
-        node = aStar(puzzle, addNodes)
+        node = misplacedTile(puzzle, addNodes)
         end = time.time()
         puzzle.print(node[1])
         print(f"Total Cost: {node[0]}")
