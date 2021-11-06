@@ -19,7 +19,7 @@ def misplacedTile(problem: Problem, addNodes):
             return -1
         else:
             node = nodes.get()
-            if (tilesMisplaced(problem.goalState, node[1]) == 0): 
+            if (tilesMisplaced(node[1]) == 0): 
                 return node
             else:
                 nodes = addNodes(nodes, expand(node[1]), node[2] + 1)
@@ -32,7 +32,7 @@ def addNodes(queue, children, depth: int):
 
 # creates a node by assigning a function cost, uniform cost + heuristic cost, to a state
 def makeNode(state, depth: int):
-    return [tilesMisplaced(Problem.goalState, state) + depth, state, depth]
+    return [tilesMisplaced(state) + depth, state, depth]
     
 # returns a generated list of child states
 # iterates through Problem's operators and runs each
@@ -50,18 +50,24 @@ def expand(state):
 # compares two lists and returns the amount of differences between the list
 # excludes the blank space
 # used for calculating amount of misplaced tiles as well as to compare state with goal state
-def tilesMisplaced(goal, state):
+def tilesMisplaced(state):
     differences = 0
     for i in range(len(state)):
-        if (goal[i] != state[i] and state[i] != 0):
+        if (state[i] != 0 and state[i] != i + 1):
             differences += 1
     return differences
 
-def manhattanCost(goal, state):
+def manhattanCost(state):
     cost = 0
     for i in range(len(state)):
-        if (goal[i] != state[i] and state[i] != 0):
-            cost += abs(i - (goal[i - 1]))
+        value = state[i]
+        if (value != 0 and value != i + 1):
+            # use // to find row, % to find column
+            valueRow = i // 3 
+            valueColumn = i % 3
+            goalRow = (value - 1) // 3
+            goalColumn = (value - 1) % 3
+            cost += abs(goalRow - valueRow) + abs(goalColumn - valueColumn)
     return cost
 
 def main():
