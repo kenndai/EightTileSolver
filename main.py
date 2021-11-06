@@ -19,9 +19,9 @@ def aStar(problem: Problem, addNodes):
             return -1
         else:
             node = nodes.get()
-            problem.print(node[1])
-            print(f"heuristic cost: {node[0] - node[2]}")
-            print(f"depth: {node[2]}\n")
+            # problem.print(node[1])
+            # print(f"heuristic cost: {node[0] - node[2]}")
+            # print(f"depth: {node[2]}\n")
             if (tilesMisplaced(node[1]) == 0): 
                 return node
             else:
@@ -77,12 +77,13 @@ def manhattanCost(state):
 
 # for a-star search, the heuristic for uniform cost is hard coded to 0 
 # returns 0
-def uniformCost():
+def uniformCost(state):
     return 0
 
-heuristicFunction = tilesMisplaced
-
+# global variable assigned to a heuristic function, modified depending on user input 
+heuristicFunction = uniformCost
 def main():
+    global heuristicFunction 
     print("Welcome to the Eight Tile Puzzle Solver!")
     userChoice = input("Enter '1' to solve the default puzzle or '2' to create your own puzzle.\n")
 
