@@ -6,7 +6,6 @@ class Problem:
     def print(state):
         for i in range(0, len(state), 3):
             print(state[i:i+3])
-        print()
 
     # operations
     # checks if blank is at any boundaries before swapping positions

@@ -9,7 +9,7 @@ import time
 # children --> list of states resulting from a shift
 # child --> a singular state from children
 
-def misplacedTile(problem: Problem, addNodes):
+def aStar(problem: Problem, addNodes):
     nodes = queue.PriorityQueue()
     # enqueues a node corresponding to initial state
     nodes.put(makeNode(problem.initialState, 0))
@@ -19,6 +19,9 @@ def misplacedTile(problem: Problem, addNodes):
             return -1
         else:
             node = nodes.get()
+            problem.print(node[1])
+            print(f"heuristic cost: {node[0] - node[2]}")
+            print(f"depth: {node[2]}\n")
             if (tilesMisplaced(node[1]) == 0): 
                 return node
             else:
@@ -32,8 +35,8 @@ def addNodes(queue, children, depth: int):
 
 # creates a node by assigning a function cost, uniform cost + heuristic cost, to a state
 def makeNode(state, depth: int):
-    return [tilesMisplaced(state) + depth, state, depth]
-    
+    return [heuristicFunction(state) + depth, state, depth]
+
 # returns a generated list of child states
 # iterates through Problem's operators and runs each
 # only non-empty states are appended
@@ -47,9 +50,8 @@ def expand(state):
             children.append(child)
     return children
 
-# compares two lists and returns the amount of differences between the list
+# returns the sum of the amount of differences between the current state and the goal
 # excludes the blank space
-# used for calculating amount of misplaced tiles as well as to compare state with goal state
 def tilesMisplaced(state):
     differences = 0
     for i in range(len(state)):
@@ -57,18 +59,28 @@ def tilesMisplaced(state):
             differences += 1
     return differences
 
+# returns the sum of the manhattan cost between the current state and goal
+# excludes the blank space
 def manhattanCost(state):
     cost = 0
     for i in range(len(state)):
         value = state[i]
         if (value != 0 and value != i + 1):
-            # use // to find row, % to find column
+            # use // to for row and % to for column to find coordinates of tile
+            # sum the differnce between the coordinates to find manhattan cost for a tile
             valueRow = i // 3 
             valueColumn = i % 3
             goalRow = (value - 1) // 3
             goalColumn = (value - 1) % 3
             cost += abs(goalRow - valueRow) + abs(goalColumn - valueColumn)
     return cost
+
+# for a-star search, the heuristic for uniform cost is hard coded to 0 
+# returns 0
+def uniformCost():
+    return 0
+
+heuristicFunction = tilesMisplaced
 
 def main():
     print("Welcome to the Eight Tile Puzzle Solver!")
@@ -77,7 +89,6 @@ def main():
     # create a problem space
     # the problem's initial state is set to either the predefined one or user input
     puzzle = Problem
-    nodes = queue.PriorityQueue()
 
     if (userChoice == '1'):
         print("Initial: ")
@@ -111,20 +122,42 @@ def main():
 
     if (algorithm == '1'):
         print("\nRunning Uniform Cost Algorithm...")
-        # call corresponding algorithm
+        heuristicFunction = uniformCost
+
+        start = time.time()
+        node = aStar(puzzle, addNodes)
+        end = time.time()
+
+        puzzle.print(node[1])
+        print(f"heuristic cost: {node[0] - node[2]}")
+        print(f"depth: {node[2]}\n")
+        print(end - start)
+
     elif (algorithm == '2'):
         print("\nRunning Misplaced Tile Algorithm...")
+        heuristicFunction = tilesMisplaced
+
         start = time.time()
-        node = misplacedTile(puzzle, addNodes)
+        node = aStar(puzzle, addNodes)
         end = time.time()
+
         puzzle.print(node[1])
-        print(f"Total Cost: {node[0]}")
-        print(f"Depth: {node[2]}")
+        print(f"heuristic cost: {node[0] - node[2]}")
+        print(f"depth: {node[2]}\n")
         print(end - start)
 
     elif (algorithm == '3'):
         print("\nRunning Manhattan Distance Algorithm...")
-        # call corresponding algorithm
+        heuristicFunction = manhattanCost
+
+        start = time.time()
+        node = aStar(puzzle, addNodes)
+        end = time.time()
+
+        puzzle.print(node[1])
+        print(f"heuristic cost: {node[0] - node[2]}")
+        print(f"depth: {node[2]}\n")
+        print(end - start)
 
 if __name__ == "__main__":
     main()
