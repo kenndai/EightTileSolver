@@ -31,7 +31,7 @@ class Problem:
             return []
 
     def shiftDown(state, blankIndex):
-        if (blankIndex < 5):
+        if (blankIndex < 6):
             return swap(state, blankIndex, blankIndex + 3)
         else:
             return []
