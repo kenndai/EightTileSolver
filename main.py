@@ -3,52 +3,62 @@ from problem import Problem
 import time
 
 # Parameter Legend
-# nodes --> priority queue
-# node --> total cost, state, and depth
+# node --> h(n), g(n), "family"
+# nodes --> priority queue 
 # state --> list representing the puzzle board 
-# children --> list of states resulting from a shift
-# child --> a singular state from children
+# families --> list of "family"
+# family --> a list containing "child" state and its "parent" state,
+#            family at index 0, parent at index 1
 
 def aStar(problem: Problem, addNodes):
     nodes = queue.PriorityQueue()
     # enqueues a node corresponding to initial state
-    nodes.put(makeNode(problem.initialState, 0))
+    nodes.put(makeNode([problem.initialState, [0]], 0))
     while(1):
         if (nodes.empty()):
             print("no solution")
             return -1
         else:
             node = nodes.get()
-            # problem.print(node[1])
-            # print(f"heuristic cost: {node[0] - node[2]}")
-            # print(f"depth: {node[2]}\n")
-            if (tilesMisplaced(node[1]) == 0): 
+            if (tilesMisplaced(node[2][0]) == 0): 
                 return node
             else:
-                nodes = addNodes(nodes, expand(node[1]), node[2] + 1)
+                nodes = addNodes(nodes, expand(node[2]), node[1] + 1)
 
-# creates nodes corresponding to the children states and enqueue
-def addNodes(queue, children, depth: int):
-    for child in children:
-        queue.put(makeNode(child, depth))
+# creates nodes corresponding to the families states and enqueue
+def addNodes(queue, families, depth):
+    for family in families:
+        queue.put(makeNode(family, depth))
     return queue
 
 # creates a node by assigning a function cost, uniform cost + heuristic cost, to a state
-def makeNode(state, depth: int):
-    return [heuristicFunction(state) + depth, state, depth]
+# return based on if family is the initial state, i.e. has no parent
+def makeNode(family, depth):
+    return [heuristicFunction(family[0]) + depth, depth, family]
 
-# returns a generated list of child states
+# returns a generated list of family states
 # iterates through Problem's operators and runs each
 # only non-empty states are appended
-def expand(state):
-    children = []
+def expand(family):
+    families = []
     operators = [Problem.shiftDown, Problem.shiftLeft, Problem.shiftRight, Problem.shiftUp]
-    blankIndex = state.index(0) 
+    child = family[0]
+    parent = family[1]
+    blankIndex = child.index(0) 
+
+    # apply operators to child state to make "grandchildren"
+    # reduce branching factor by not allowing grandchildren to match the "grandparent"
     for shift in operators:
-        child = shift(state, blankIndex)
-        if (child):
-            children.append(child)
-    return children
+        grandchild = shift(family, blankIndex)
+        if (not isEqual(grandchild, parent)):
+            families.append([grandchild, child])
+    return families
+
+def isEqual(state1, state2):
+    for i in range(len(state1)):
+        if (state1[i] != state2[i]):
+            return False
+    return True
 
 # returns the sum of the amount of differences between the current state and the goal
 # excludes the blank space
@@ -129,9 +139,9 @@ def main():
         node = aStar(puzzle, addNodes)
         end = time.time()
 
-        puzzle.print(node[1])
-        print(f"heuristic cost: {node[0] - node[2]}")
-        print(f"depth: {node[2]}\n")
+        puzzle.print(node[2][0])
+        print(f"heuristic cost: {node[0] - node[1]}")
+        print(f"depth: {node[1]}\n")
         print(end - start)
 
     elif (algorithm == '2'):
@@ -142,9 +152,9 @@ def main():
         node = aStar(puzzle, addNodes)
         end = time.time()
 
-        puzzle.print(node[1])
-        print(f"heuristic cost: {node[0] - node[2]}")
-        print(f"depth: {node[2]}\n")
+        puzzle.print(node[2][0])
+        print(f"heuristic cost: {node[0] - node[1]}")
+        print(f"depth: {node[1]}\n")
         print(end - start)
 
     elif (algorithm == '3'):
@@ -155,9 +165,9 @@ def main():
         node = aStar(puzzle, addNodes)
         end = time.time()
 
-        puzzle.print(node[1])
-        print(f"heuristic cost: {node[0] - node[2]}")
-        print(f"depth: {node[2]}\n")
+        puzzle.print(node[2][0])
+        print(f"heuristic cost: {node[0] - node[1]}")
+        print(f"depth: {node[1]}\n")
         print(end - start)
 
 if __name__ == "__main__":

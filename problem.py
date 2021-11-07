@@ -11,27 +11,28 @@ class Problem:
     # checks if blank is at any boundaries before swapping positions
     # if blank cannot be shifted, return a copy of the original list so it's not
     # modified for the other possible operations
-    def shiftLeft(state, blankIndex):
+
+    def shiftLeft(family, blankIndex):
         if (blankIndex % 3 != 0):
-            return swap(state, blankIndex, blankIndex - 1)
+            return swap(family[0], blankIndex, blankIndex - 1)
         else:
             return []
 
-    def shiftRight(state, blankIndex):
+    def shiftRight(family, blankIndex):
         if (blankIndex % 3 != 2):
-            return swap(state, blankIndex, blankIndex + 1)
+            return swap(family[0], blankIndex, blankIndex + 1)
         else:
             return []
 
-    def shiftUp(state, blankIndex):
+    def shiftUp(family, blankIndex):
         if (blankIndex > 2):
-            return swap(state, blankIndex, blankIndex - 3)
+            return swap(family[0], blankIndex, blankIndex - 3)
         else:
             return []
 
-    def shiftDown(state, blankIndex):
+    def shiftDown(family, blankIndex):
         if (blankIndex < 6):
-            return swap(state, blankIndex, blankIndex + 3)
+            return swap(family[0], blankIndex, blankIndex + 3)
         else:
             return []
 
