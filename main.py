@@ -62,6 +62,7 @@ def expand(family):
             families.append([grandchild, child])
     return families
 
+# compares two states, returns True if they are equal, false otherwise
 def isEqual(state1, state2):
     for i in range(len(state1)):
         if (state1[i] != state2[i] or len(state1) != len(state2)):
@@ -84,7 +85,7 @@ def manhattanCost(state):
     for i in range(len(state)):
         value = state[i]
         if (value != 0 and value != i + 1):
-            # use // to for row and % to for column to find coordinates of tile
+            # use // for row and % for column to find coordinates of tile
             # sum the differnce between the coordinates to find manhattan cost for a tile
             valueRow = i // 3 
             valueColumn = i % 3
@@ -98,8 +99,7 @@ def manhattanCost(state):
 def uniformCost(state):
     return 0
 
-# main functions
-
+# main helper functions
 def enterPuzzle():
     row1 = input("Enter the first row or the entire puzzle all at once: ")
     if (len(row1) == 9):
