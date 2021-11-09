@@ -1,0 +1,40 @@
+Welcome to the Eight Tile Puzzle Solver!
+Enter '1' to solve the default puzzle or '2' to create your own puzzle.
+2
+Enter your puzzle, entering three values at a time or nine values all at once.
+Please use a zero to represent the blank space.
+Enter the first row or the entire puzzle all at once: 103426758
+Your puzzle: 
+[1, 0, 3]
+[4, 2, 6]
+[7, 5, 8]
+
+Select a search algorithm to solve your puzzle:
+Enter '1' for Uniform Cost Search
+Enter '2'for Misplaced Tile A*
+Enter '3' for Manhattan Distance A*
+3
+Running Manhattan Distance Algorithm...
+
+The best state to expand with a g(n) = 0 and h(n) = 3 is...
+[1, 0, 3]
+[4, 2, 6]
+[7, 5, 8]
+The best state to expand with a g(n) = 1 and h(n) = 2 is...
+[1, 2, 3]
+[4, 0, 6]
+[7, 5, 8]
+The best state to expand with a g(n) = 2 and h(n) = 1 is...
+[1, 2, 3]
+[4, 5, 6]
+[7, 0, 8]
+The best state to expand with a g(n) = 3 and h(n) = 0 is...
+[1, 2, 3]
+[4, 5, 6]
+[7, 8, 0]
+
+Goal state!
+
+Solution depth was: 3
+Number of nodes expanded: 3
+Max queue size: 6

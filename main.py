@@ -11,6 +11,9 @@ import time
 #            family at index 0, parent at index 1
 
 def aStar(problem: Problem, addNodes):
+    global maxQueueSize
+    global nodesExpanded
+
     nodes = queue.PriorityQueue()
     # enqueues a node corresponding to initial state
     nodes.put(makeNode([problem.initialState, [0]], 0))
@@ -20,10 +23,15 @@ def aStar(problem: Problem, addNodes):
             return -1
         else:
             node = nodes.get()
+            print(f"The best state to expand with a g(n) = {node[1]} and h(n) = {node[0] - node[1]} is...")
+            problem.print(node[2][0])
             if (tilesMisplaced(node[2][0]) == 0): 
                 return node
             else:
+                nodesExpanded += 1
                 nodes = addNodes(nodes, expand(node[2]), node[1] + 1)
+                if nodes.qsize() > maxQueueSize:
+                    maxQueueSize = nodes.qsize()
 
 # creates nodes corresponding to the families states and enqueue
 def addNodes(queue, families, depth):
@@ -56,7 +64,7 @@ def expand(family):
 
 def isEqual(state1, state2):
     for i in range(len(state1)):
-        if (state1[i] != state2[i]):
+        if (state1[i] != state2[i] or len(state1) != len(state2)):
             return False
     return True
 
@@ -90,8 +98,43 @@ def manhattanCost(state):
 def uniformCost(state):
     return 0
 
+# main functions
+
+def enterPuzzle():
+    row1 = input("Enter the first row or the entire puzzle all at once: ")
+    if (len(row1) == 9):
+        row1 = list(row1)
+        for i in range(len(row1)):
+            row1[i] = int(row1[i])
+        return row1
+    elif (len(row1) != 3):
+        return -1
+
+    row2 = input("Second row: ")
+    if (len(row2) != 3):
+        return -1
+
+    row3 = input("Third row: ")
+    if (len(row3) != 3):
+        return -1
+
+    rowInput = list(row1 + row2 + row3)
+    for i in range(len(rowInput)):
+        rowInput[i] = int(rowInput[i])
+    
+    return rowInput
+
+def printStatistics(node, start, end):
+        print(f"\nGoal state!")
+        print(f"\nSolution depth was: {node[1]}")
+        print(f"Number of nodes expanded: {nodesExpanded}")
+        print(f"Max queue size: {maxQueueSize}")
+
 # global variable assigned to a heuristic function, modified depending on user input 
 heuristicFunction = uniformCost
+maxQueueSize = 0
+nodesExpanded = 0
+
 def main():
     global heuristicFunction 
     print("Welcome to the Eight Tile Puzzle Solver!")
@@ -106,24 +149,16 @@ def main():
         puzzle.print(puzzle.initialState)
 
     elif (userChoice == '2'):
-        print("\nEnter your puzzle, using a zero to represent the blank.\nPlease only enter valid 8-puzzles.\n") 
+        print("\nEnter your puzzle, entering three values at a time or nine values all at once.")
+        print("Please use a zero to represent the blank space.") 
 
-        row1 = input("row 1: ")
-        row2 = input("row 2: ")
-        row3 = input("row 3: ")
-
-        # checks that the length of each row is exactly 3
-        if (len(row1) != 3 or len(row2) != 3 or len(row3) != 3 ):
-            print("Invalid row length! Exiting Program.")
+        puzzleInput = enterPuzzle()
+        if (puzzleInput == -1):
+            print("Invalid input. Exiting program.")
             return -1
-        
-        # converts rows into a list of integers
-        rowInput = list(row1 + row2 + row3)
-        for i in range(len(rowInput)):
-            rowInput[i] = int(rowInput[i])
-        
+
         # set intial state to input
-        puzzle.initialState = rowInput
+        puzzle.initialState = puzzleInput
         print("\nYour puzzle: ")
         puzzle.print(puzzle.initialState)
 
@@ -132,43 +167,34 @@ def main():
     algorithm = input("Enter \'1\' for Uniform Cost Search\nEnter \'2\'for Misplaced Tile A*\nEnter \'3\' for Manhattan Distance A*\n")
 
     if (algorithm == '1'):
-        print("\nRunning Uniform Cost Algorithm...")
+        print("\nRunning Uniform Cost Algorithm...\n")
         heuristicFunction = uniformCost
 
         start = time.time()
         node = aStar(puzzle, addNodes)
         end = time.time()
 
-        puzzle.print(node[2][0])
-        print(f"heuristic cost: {node[0] - node[1]}")
-        print(f"depth: {node[1]}\n")
-        print(end - start)
+        printStatistics(node, start, end)
 
     elif (algorithm == '2'):
-        print("\nRunning Misplaced Tile Algorithm...")
+        print("\nRunning Misplaced Tile Algorithm...\n")
         heuristicFunction = tilesMisplaced
 
         start = time.time()
         node = aStar(puzzle, addNodes)
         end = time.time()
 
-        puzzle.print(node[2][0])
-        print(f"heuristic cost: {node[0] - node[1]}")
-        print(f"depth: {node[1]}\n")
-        print(end - start)
+        printStatistics(node, start, end)
 
     elif (algorithm == '3'):
-        print("\nRunning Manhattan Distance Algorithm...")
+        print("\nRunning Manhattan Distance Algorithm...\n")
         heuristicFunction = manhattanCost
 
         start = time.time()
         node = aStar(puzzle, addNodes)
         end = time.time()
 
-        puzzle.print(node[2][0])
-        print(f"heuristic cost: {node[0] - node[1]}")
-        print(f"depth: {node[1]}\n")
-        print(end - start)
+        printStatistics(node, start, end)
 
 if __name__ == "__main__":
     main()
